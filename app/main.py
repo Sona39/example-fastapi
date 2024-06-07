@@ -28,4 +28,4 @@ app.include_router(vote.router)
 @app.get("/")
 def root(db: Session = Depends(get_db)):
     post = db.query(models.Post).all()
-    return {"message": "qez hinch"}
+    return {"message": "qez hinch39"}
