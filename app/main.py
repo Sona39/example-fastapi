@@ -27,4 +27,4 @@ app.include_router(vote.router)
 
 @app.get("/")
 def root(db: Session = Depends(get_db)):
-    return {"message": "qez hinch39"}
+    return {"message": "ամեն լինկ մի պացի անգրագետի նմանgi"}
