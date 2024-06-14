@@ -7,7 +7,7 @@ from ..oauth2 import get_current_user
 
 
 router = APIRouter(
-    prefix="/votes",
+    prefix="/vote",
     tags=['Vote']
 )
 
