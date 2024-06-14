@@ -8,7 +8,7 @@ from app.config import settings
 
 def test_root(client):
     res = client.get('/')
-    assert res.json().get('message') == "ամեն լինկ մի պացի անգրագետի նման"
+    assert res.json().get('message') == "հոր ես պացալ, բալքամ վիրուսա"
     assert res.status_code == 200
 
 def test_create_user(client):
