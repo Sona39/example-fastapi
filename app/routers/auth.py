@@ -18,7 +18,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session =
 
     # --- Retrieve the user from the database using the provided email (username) ---
     user = db.query(models.User).filter(models.User.email == user_credentials.username).first()
-
+    
     # --- Check if the user exists ---
     # If the user is not found in the database, raise an HTTP 403 Forbidden error
     if not user:
@@ -34,7 +34,8 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session =
 
     # --- Generate a JWT token ---
     # Create a JWT token that includes the user's id in the payload
-    access_token = oauth2.create_access_token(data = {"user_id": user.id})
+    access_token = oauth2.create_access_token(data={"user_id": user.id, "first_name": user.first_name,
+                                                     "last_name": user.last_name, "user_email": user.email})
 
     # --- Return the generated token ---
     # The response includes the access token and the token type (bearer)

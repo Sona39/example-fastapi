@@ -1,6 +1,6 @@
 from fastapi import status, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
-from .. import models, schemas, utils
+from .. import models, schemas, utils, oauth2
 from ..database import get_db
 
 router = APIRouter(
@@ -34,7 +34,6 @@ def create_user(user: schemas.CreateUser, db: Session = Depends(get_db)):
     new_user = models.User(**user.dict())
     db.add(new_user)
     db.commit()
-    db.refresh(new_user)
 
     return new_user
 
@@ -56,3 +55,140 @@ def get_user(id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
     return user
+
+
+
+
+# UPDATE USER
+# @router.put("/", status_code=status.HTTP_200_OK)
+# def update_user(
+#     user: schemas.CreateUser,  # Assuming schemas.UpdateUser is defined for updating user details
+#     db: Session = Depends(get_db),
+#     current_user: models.User = Depends(oauth2.get_current_user)
+# ):
+#     """
+#     Update user details.
+
+#     Args:
+#     - user (schemas.UpdateUser): Updated user data.
+#     - db (Session): Database session dependency.
+#     - current_user (models.User): Current authenticated user.
+
+#     Raises:
+#     - HTTPException: If the email provided already exists in the database.
+#     """
+#     # Query the user to update
+#     db_user = db.query(models.User).filter(models.User.id == current_user.id).first()
+
+#     if not db_user:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+#     # Check if the new email is already taken by another user
+#     if user.email != db_user.email:
+#         existing_user = db.query(models.User).filter(models.User.email == user.email).first()
+#         if existing_user:
+#             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+
+#     # Update user attributes
+#     db_user.email = user.email
+#     db_user.first_name = user.first_name
+#     db_user.last_name = user.last_name
+#     db_user.password = utils.hash(user.password)
+
+#     # Commit changes to the database
+#     db.commit()
+
+#     # Generate a new access token
+#     new_token_data = {
+#         "user_id": db_user.id,
+#         "first_name": db_user.first_name,
+#         "last_name": db_user.last_name,
+#         "user_email": db_user.email
+#     }
+#     new_access_token = oauth2.create_access_token(new_token_data)
+
+#     user_response = schemas.UserUpdateResponse(
+#         id=db_user.id,
+#         email=db_user.email,
+#         first_name=db_user.first_name,
+#         last_name=db_user.last_name,
+#         created_at=db_user.created_at,
+#         access_token=new_access_token
+#     )
+
+#     return user_response
+    
+
+
+# UPDATE USER
+@router.patch("/", status_code=status.HTTP_200_OK)
+def update_user(
+    user_update: schemas.UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(oauth2.get_current_user)
+):
+    """
+    Update user details.
+
+    Args:
+    - user_update (schemas.UpdateUser): Updated user data.
+    - db (Session): Database session dependency.
+    - current_user (models.User): Current authenticated user.
+
+    Raises:
+    - HTTPException: If the email provided already exists in the database.
+    """
+    # Query the user to update
+    db_user = db.query(models.User).filter(models.User.id == current_user.id).first()
+
+    if not db_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    # Check if the new email is already taken by another user, if email is updated
+    if user_update.email and user_update.email != db_user.email:
+        existing_user = db.query(models.User).filter(models.User.email == user_update.email).first()
+        if existing_user:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+
+    # Update user attributes based on provided data
+    if user_update.email:
+        db_user.email = user_update.email
+    if user_update.first_name:
+        db_user.first_name = user_update.first_name
+    if user_update.last_name:
+        db_user.last_name = user_update.last_name
+    if user_update.password:
+        db_user.password = utils.hash(user_update.password)
+
+    # Commit changes to the database
+    db.commit()
+
+    # Generate a new access token (if necessary, depending on your auth setup)
+    new_token_data = {
+        "user_id": db_user.id,
+        "first_name": db_user.first_name,
+        "last_name": db_user.last_name,
+        "user_email": db_user.email
+    }
+    new_access_token = oauth2.create_access_token(new_token_data)
+
+    # Prepare response
+    user_response = schemas.UserUpdateResponse(
+        id=db_user.id,
+        email=db_user.email,
+        first_name=db_user.first_name,
+        last_name=db_user.last_name,
+        created_at=db_user.created_at,
+        access_token=new_access_token
+    )
+
+    return user_response
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,169 @@
+<template>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form @submit.prevent="login">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" v-model="email" required @input="validateEmail" />
+        <span v-if="!isValidEmail && isEmailTouched" class="error-message">Please enter a valid email address.</span>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-input-container">
+          <input
+            :type="passwordFieldType"
+            id="password"
+            v-model="password"
+            required
+            @input="validatePassword"
+            :class="{ 'error': !isValidPassword && isPasswordTouched }"
+          />
+          <span class="toggle-password" @click="togglePasswordVisibility">
+            <i :class="passwordFieldType === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
+          </span>
+        </div>
+        <span v-if="!isValidPassword && isPasswordTouched" class="error-message">
+          Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.
+        </span>
+      </div>
+      <button type="submit" :disabled="!isValidForm">Login</button>
+      <p v-if="error" class="error-message">{{ error }}</p>
+    </form>
+  </div>
+</template>
+
+<script>
+import axios from '../axios'; // Assuming you have a custom axios instance
+
+export default {
+  name: 'LoginComponent',
+  data() {
+    return {
+      email: '',
+      password: '',
+      error: null,
+      isEmailValid: true,
+      isPasswordValid: true,
+      isEmailTouched: false,
+      isPasswordTouched: false,
+      passwordFieldType: 'password' // Initial type of password input
+    };
+  },
+  computed: {
+    isValidEmail() {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return this.isEmailTouched ? emailPattern.test(this.email) : true;
+    },
+    isValidPassword() {
+      const passwordPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      return this.isPasswordTouched ? passwordPattern.test(this.password) : true;
+    },
+    isValidForm() {
+      return this.isValidEmail && this.isValidPassword;
+    }
+  },
+  methods: {
+    validateEmail() {
+      this.isEmailTouched = true;
+    },
+    validatePassword() {
+      this.isPasswordTouched = true;
+    },
+    togglePasswordVisibility() {
+      this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
+    },
+    async login() {
+      try {
+        const formData = new FormData();
+        formData.append('username', this.email);
+        formData.append('password', this.password);
+
+        const response = await axios.post('/login', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        localStorage.setItem('token', response.data.access_token);
+        this.$router.push('/');
+      } catch (err) {
+        this.error = 'Invalid email or password';
+      }
+    }
+  }
+};
+</script>
+
+<style scoped>
+.login-container {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+h2 {
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.password-input-container input {
+  padding-right: 30px; /* Space for the eye icon */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+button {
+  padding: 10px;
+  background-color: #42b983;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+button:hover:enabled {
+  background-color: #369870;
+}
+
+.error-message {
+  color: #f00;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+</style>

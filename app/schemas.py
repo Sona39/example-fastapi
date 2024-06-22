@@ -15,6 +15,8 @@ class CreatePost(PostBase):
 class UserResponse(BaseModel):
     id: int
     email: EmailStr
+    first_name: str
+    last_name: str
     created_at: datetime
     class Config:
         orm_mode = True
@@ -29,7 +31,9 @@ class PostResponse(PostBase):
 
 class CreateUser(BaseModel):
     email: EmailStr
-    password: str
+    password: str 
+    first_name: str
+    last_name: str
 
 
 class UserLogin(BaseModel):
@@ -41,7 +45,10 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    id: Optional[int] = None
+    id: int
+    first_name: str
+    last_name: str
+    user_email: str
 
 # class Vote(BaseModel):
 #         post_id: int
@@ -55,4 +62,22 @@ class PostOut(BaseModel):
         from_attributes = True
 
 
+class UserUpdateResponse(BaseModel):
+    id: int
+    email: EmailStr 
+    first_name: str
+    last_name: str   
+    created_at: datetime
+    access_token: str
+    class Config:
+        from_attributes = True
 
+class VoteResponse(BaseModel):
+    message: str
+    likes: int
+
+class UserUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    password: Optional[str] = None
