@@ -27,8 +27,8 @@ export default {
   data() {
     return {
       post: null,
-      notificationMessage: '', // Add this line
-      notificationType: 'success', // Add this line
+      notificationMessage: '',
+      notificationType: 'success',
     };
   },
   methods: {
@@ -45,7 +45,7 @@ export default {
       try {
         await axios.put(`http://127.0.0.1:8000/posts/${this.$route.params.id}`, this.post, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming token is stored in localStorage
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         // Set notification message and type
@@ -53,7 +53,7 @@ export default {
         this.notificationType = 'success';
         // Optionally navigate to the PostFeed page after a delay
         setTimeout(() => {
-          this.notificationMessage = ''; // Clear the message
+          this.notificationMessage = '';
           this.$router.push({ name: 'PostFeed' });
         }, 2000);
       } catch (error) {
@@ -72,7 +72,10 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
 .update-post {
+  font-family: 'Montserrat', sans-serif;
   max-width: 800px;
   margin: 20px auto;
   padding: 20px;
@@ -85,6 +88,7 @@ h2 {
   text-align: center;
   color: #333;
   margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .form-group {
@@ -92,6 +96,7 @@ h2 {
 }
 
 .form-control {
+  font-family: 'Montserrat', sans-serif;
   width: 100%;
   padding: 10px;
   border-radius: 5px;
@@ -100,18 +105,22 @@ h2 {
 
 .btn {
   display: inline-block;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 12px 24px; /* Adjusted padding */
+  font-size: 14px;
   font-weight: bold;
+  font-family: 'Montserrat', sans-serif;
   text-align: center;
   text-decoration: none;
-  color: #fff;
-  background-color: #42b983;
-  border-radius: 5px;
+  color: white;
+  background-color: #9CAF88; /* Ecru White */
+  border: 2px solid #9CAF88; /* Ecru White */
+  border-radius: 20px;
   cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .btn:hover {
-  background-color: #369870;
+  background-color: #5F4F4D; /* Martini */
+  border-color: #5F4F4D; /* Martini */
 }
 </style>

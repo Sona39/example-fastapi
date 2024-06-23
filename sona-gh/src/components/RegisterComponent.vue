@@ -2,19 +2,17 @@
   <div class="register-container">
     <h2>Register</h2>
     <form @submit.prevent="registerUser">
-      <div class="input-group">
-        <div class="form-group">
-          <label for="first_name">First Name:</label>
-          <input v-model.trim="form.first_name" type="text" id="first_name" required @blur="validateName('first_name')" />
-          <span v-if="!isInitialFirstNameValid && !form.first_name" class="initial-error-message">First Name is required.</span>
-          <span v-if="!isInitialFirstNameValid && form.first_name && !isValidName('first_name')" class="error-message">Please enter only letters.</span>
-        </div>
-        <div class="form-group">
-          <label for="last_name">Last Name:</label>
-          <input v-model.trim="form.last_name" type="text" id="last_name" required @blur="validateName('last_name')" />
-          <span v-if="!isInitialLastNameValid && !form.last_name" class="initial-error-message">Last Name is required.</span>
-          <span v-if="!isInitialLastNameValid && form.last_name && !isValidName('last_name')" class="error-message">Please enter only letters.</span>
-        </div>
+      <div class="form-group">
+        <label for="first_name">First Name:</label>
+        <input v-model.trim="form.first_name" type="text" id="first_name" required @blur="validateName('first_name')" />
+        <span v-if="!isInitialFirstNameValid && !form.first_name" class="initial-error-message">First Name is required.</span>
+        <span v-if="!isInitialFirstNameValid && form.first_name && !isValidName('first_name')" class="error-message">Please enter only letters.</span>
+      </div>
+      <div class="form-group">
+        <label for="last_name">Last Name:</label>
+        <input v-model.trim="form.last_name" type="text" id="last_name" required @blur="validateName('last_name')" />
+        <span v-if="!isInitialLastNameValid && !form.last_name" class="initial-error-message">Last Name is required.</span>
+        <span v-if="!isInitialLastNameValid && form.last_name && !isValidName('last_name')" class="error-message">Please enter only letters.</span>
       </div>
       <div class="form-group">
         <label for="email">Email:</label>
@@ -121,103 +119,108 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
 .register-container {
-  max-width: 500px; /* Adjusted max-width for better spacing */
+  max-width: 400px;
   margin: 20px auto;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px; /* Increased border radius for a softer look */
-  background-color: #f9f9f9; /* Light background color */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle box shadow for depth */
+  border: 1px solid #9CAF88;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Montserrat', sans-serif; /* Apply Montserrat font to the container */
 }
 
 h2 {
   text-align: center;
-  color: #333; /* Darker text color */
+  color: #5F4F4D;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif; /* Apply Montserrat font to the heading */
 }
 
 form {
   display: flex;
   flex-direction: column;
-}
-
-.input-group {
-  display: flex;
-  gap: 20px; /* Increased gap between first_name and last_name inputs */
+  font-family: 'Montserrat', sans-serif; /* Apply Montserrat font to the form */
 }
 
 .form-group {
-  flex: 1; /* Allow inputs to grow equally within the form-group */
   margin-bottom: 15px;
+  font-family: 'Montserrat', sans-serif; /* Apply Montserrat font to the form group */
 }
 
 label {
   display: block;
   margin-bottom: 5px;
-  color: #555; /* Slightly darker label color */
+  color: #5F4F4D;
+  font-weight: bold;
+  font-family: 'Montserrat', sans-serif; /* Apply Montserrat font to the label */
 }
 
 input {
   width: 100%;
-  padding: 12px; /* Increased padding for larger fields */
+  padding: 10px;
   box-sizing: border-box;
-  border: 1px solid #ddd; /* Light border */
-  border-radius: 5px; /* Rounded corners */
-  transition: border-color 0.3s ease; /* Smooth border color transition */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: border-color 0.3s ease;
+  font-family: 'Montserrat', sans-serif; /* Apply Montserrat font to the input */
 }
 
 input:focus {
   outline: none;
-  border-color: #007bff; /* Focus border color */
+  border-color: #9CAF88;
 }
 
 .password-input-container {
   position: relative;
 }
 
+.password-input-container input {
+  padding-right: 40px;
+}
+
 .password-toggle {
   position: absolute;
-  top: 50%;
   right: 10px;
+  top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+  color: #5F4F4D;
 }
 
-.password-toggle i {
-  font-size: 1rem;
-}
-
-button {
-  padding: 14px; /* Increased padding for larger button */
-  background-color: #007bff; /* Blue background color */
+button[type="submit"] {
+  padding: 12px 24px;
+  background-color: #9CAF88;
   color: white;
-  border: none;
-  border-radius: 5px; /* Rounded corners */
+  border: 2px solid #9CAF88;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease; /* Smooth background color transition */
+  text-align: center;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  font-family: 'Montserrat', sans-serif; /* Apply Montserrat font to the button */
 }
 
-button:disabled {
+button[type="submit"]:hover {
+  background-color: #5F4F4D;
+  border-color: #5F4F4D;
+}
+
+button[type="submit"]:disabled {
   background-color: #ccc;
+  border-color: #ccc;
   cursor: not-allowed;
 }
 
-button:hover:enabled {
-  background-color: #0056b3; /* Darker blue on hover */
-}
-
-.initial-error-message,
-.error-message {
-  color: #dc3545; /* Error message color */
-  font-size: 0.9rem; /* Font size adjustment */
-  margin-top: 4px;
-}
-
-.error-message {
-  display: none; /* Hide error messages by default */
-}
-
-.error-message.active {
-  display: block; /* Display error message when active */
+.error-message,
+.initial-error-message {
+  color: #f00;
+  font-size: 0.85rem;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif; /* Apply Montserrat font to the error messages */
 }
 </style>

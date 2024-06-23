@@ -16,38 +16,51 @@ export default {
     initialLikes: {
       type: Number,
       default: 0
-    },
-    initialLiked: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
     return {
       likes: this.initialLikes,
-      liked: this.initialLiked
+      liked: false
     };
   },
   mounted() {
+    this.fetchLikedState();
     this.likes = this.initialLikes;
-    this.liked = this.initialLiked;
   },
   methods: {
+    async fetchLikedState() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await axios.get('http://127.0.0.1:8000/vote', {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          const likedPosts = response.data.map(item => item.postid);
+          this.liked = likedPosts.includes(this.postId);
+        } catch (error) {
+          console.error('Error fetching liked posts:', error);
+        }
+      }
+    },
     async toggleLike() {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.post(`http://127.0.0.1:8000/vote/${this.postId}`, {
-          liked: !this.liked
-        }, {
-          headers: {
-            Authorization: `Bearer ${token}`
+        const response = await axios.post(
+          `http://127.0.0.1:8000/vote/${this.postId}`,
+          { liked: !this.liked },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
-        });
-        this.likes = response.data.likes; // Update local likes count
+        );
+        this.likes = response.data.likes;
         this.liked = !this.liked;
-
-        // Emit event to notify parent component of updated likes count
         this.$emit('update:likes', this.likes);
+        this.fetchLikedState(); // Fetch the liked state again to ensure accuracy
       } catch (error) {
         console.error('Error toggling like:', error);
       }
@@ -86,7 +99,7 @@ export default {
 }
 
 .like-button:hover .fas.fa-heart {
-  color: #d32f2f; /* Filled heart color on hover */
+  color: #9caf88; /* Filled heart color on hover */
 }
 
 .like-button:hover .far.fa-heart {

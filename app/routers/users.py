@@ -1,4 +1,4 @@
-from fastapi import status, HTTPException, Depends, APIRouter
+from fastapi import status, HTTPException, Depends, APIRouter, Response
 from sqlalchemy.orm import Session
 from .. import models, schemas, utils, oauth2
 from ..database import get_db
@@ -58,66 +58,6 @@ def get_user(id: int, db: Session = Depends(get_db)):
 
 
 
-
-# UPDATE USER
-# @router.put("/", status_code=status.HTTP_200_OK)
-# def update_user(
-#     user: schemas.CreateUser,  # Assuming schemas.UpdateUser is defined for updating user details
-#     db: Session = Depends(get_db),
-#     current_user: models.User = Depends(oauth2.get_current_user)
-# ):
-#     """
-#     Update user details.
-
-#     Args:
-#     - user (schemas.UpdateUser): Updated user data.
-#     - db (Session): Database session dependency.
-#     - current_user (models.User): Current authenticated user.
-
-#     Raises:
-#     - HTTPException: If the email provided already exists in the database.
-#     """
-#     # Query the user to update
-#     db_user = db.query(models.User).filter(models.User.id == current_user.id).first()
-
-#     if not db_user:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-
-#     # Check if the new email is already taken by another user
-#     if user.email != db_user.email:
-#         existing_user = db.query(models.User).filter(models.User.email == user.email).first()
-#         if existing_user:
-#             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
-
-#     # Update user attributes
-#     db_user.email = user.email
-#     db_user.first_name = user.first_name
-#     db_user.last_name = user.last_name
-#     db_user.password = utils.hash(user.password)
-
-#     # Commit changes to the database
-#     db.commit()
-
-#     # Generate a new access token
-#     new_token_data = {
-#         "user_id": db_user.id,
-#         "first_name": db_user.first_name,
-#         "last_name": db_user.last_name,
-#         "user_email": db_user.email
-#     }
-#     new_access_token = oauth2.create_access_token(new_token_data)
-
-#     user_response = schemas.UserUpdateResponse(
-#         id=db_user.id,
-#         email=db_user.email,
-#         first_name=db_user.first_name,
-#         last_name=db_user.last_name,
-#         created_at=db_user.created_at,
-#         access_token=new_access_token
-#     )
-
-#     return user_response
-    
 
 
 # UPDATE USER
@@ -186,7 +126,28 @@ def update_user(
 
 
 
+# DELETE USER 
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def get_user(id: int,
+    db: Session = Depends(get_db),                        # Dependency injection for database session
+    current_user: int = Depends(oauth2.get_current_user) ):
 
+    # Query User to delete
+    user = db.query(models.User).filter(models.User.id == id).first()
+
+    # Raise HTTP 404 if post not found
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
+
+    # Raise HTTP 403 if current user is not the owner of the post
+    if user.id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Not authorized to delete post {id}")
+
+    # Delete post from database
+    db.delete(user)
+    db.commit()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 

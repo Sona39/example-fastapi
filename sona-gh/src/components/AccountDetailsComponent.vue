@@ -1,27 +1,48 @@
 <template>
   <div class="account-details">
     <h1>Account Details</h1>
-    <span @click="openReauthModal" class="edit-icon"></span>
+    <span v-if="!isEditable" @click="openReauthModal" class="edit-icon"></span>
+    <span v-if="isEditable" @click="refreshPage" class="refresh-icon"></span>
     <div class="user-info" :class="{ 'disabled': !isEditable }">
       <div class="info-item">
         <label class="label">Email:</label>
-        <input type="email" v-model="userEmail" class="input" :disabled="!isEditable" />
-        <button v-if="isEditable" @click="saveEmailChanges" class="btn-save">Save Email</button>
+        <div class="info-content">
+          <div v-if="!isEditable" class="info-text">{{ userEmail }}</div>
+          <input v-else type="text" v-model="newEmail" class="input email-input" />
+          <button v-if="isEditable" @click="saveEmailChanges" class="btn-check">
+            <img src="@/assets/checkmark.png" alt="Save Email">
+          </button>
+        </div>
       </div>
       <div class="info-item">
         <label class="label">First Name:</label>
-        <input type="text" v-model="firstName" class="input" :disabled="!isEditable" />
-        <button v-if="isEditable" @click="saveFirstNameChanges" class="btn-save">Save First Name</button>
+        <div class="info-content">
+          <div v-if="!isEditable" class="info-text">{{ firstName }}</div>
+          <input v-else type="text" v-model="newFirstName" class="input name-input" />
+          <button v-if="isEditable" @click="saveFirstNameChanges" class="btn-check">
+            <img src="@/assets/checkmark.png" alt="Save First Name">
+          </button>
+        </div>
       </div>
       <div class="info-item">
         <label class="label">Last Name:</label>
-        <input type="text" v-model="lastName" class="input" :disabled="!isEditable" />
-        <button v-if="isEditable" @click="saveLastNameChanges" class="btn-save">Save Last Name</button>
+        <div class="info-content">
+          <div v-if="!isEditable" class="info-text">{{ lastName }}</div>
+          <input v-else type="text" v-model="newLastName" class="input name-input" />
+          <button v-if="isEditable" @click="saveLastNameChanges" class="btn-check">
+            <img src="@/assets/checkmark.png" alt="Save Last Name">
+          </button>
+        </div>
       </div>
       <div class="info-item" v-if="showNewPassword">
         <label class="label">New Password:</label>
-        <input type="password" v-model="newPassword" class="input" :disabled="!isEditable" />
-        <button v-if="isEditable" @click="savePasswordChange" class="btn-save">Save Password</button>
+        <input type="password" v-model="newPassword" class="input" :class="{ 'long-input': showNewPassword }" :disabled="!isEditable" />
+        <button v-if="isEditable" @click="savePasswordChange" class="btn-check">
+          <img src="@/assets/checkmark.png" alt="Save Password">
+        </button>
+      </div>
+      <div class="info-item">
+        <button v-if="isEditable" @click="confirmDeleteAccount" class="btn-delete">Delete Account</button>
       </div>
     </div>
 
@@ -29,13 +50,32 @@
       <p>Data was changed successfully!</p>
     </div>
 
+    <!-- Reauth Modal -->
     <div v-if="showReauthModal" class="modal">
-      <div class="modal-content">
+      <div class="modal-content smaller">
         <span class="close" @click="closeReauthModal">&times;</span>
         <h2>Re-authenticate</h2>
-        <input type="password" v-model="reauthPassword" placeholder="Enter your password" class="input" />
+        <p class="modal-text">Please enter your password to continue.</p>
+        <input type="password"
+              v-model="reauthPassword"
+              placeholder="Enter your password"
+              class="input"
+              @keyup.enter="reauthenticate" />
+        <p v-if="reauthError" class="error-msg">{{ reauthError }}</p>
         <button @click="reauthenticate" class="btn-save">Submit</button>
-        <p v-if="reauthError" class="error-msg">{{ reauthError }}</p> <!-- Password is incorrect -->
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirmation" class="modal">
+      <div class="modal-content smaller">
+        <span class="close" @click="cancelDelete">&times;</span>
+        <h2>Confirm Account Deletion</h2>
+        <p class="modal-text">Are you sure you want to delete your account?</p>
+        <div class="modal-buttons">
+          <button @click="deleteAccount" class="btn-delete-confirm">Confirm Delete</button>
+          <button @click="cancelDelete" class="btn-cancel">Cancel</button>
+        </div>
       </div>
     </div>
   </div>
@@ -43,21 +83,26 @@
 
 <script>
 import axiosInstance from '../axios'; // Adjust the path as needed
+import router from '../router'; // Assuming you have a router instance
 
 export default {
   name: "AccountDetails",
   data() {
     return {
-      userEmail: "",
-      firstName: "",
-      lastName: "",
+      userEmail: '',
+      firstName: '',
+      lastName: '',
       newPassword: "",
+      newEmail: "",
+      newFirstName: "",
+      newLastName: "",
       successMessage: false,
       isEditable: false,
       showReauthModal: false,
       showNewPassword: false,
       reauthPassword: "",
-      reauthError: "" // Initialize reauthError for error handling
+      reauthError: "",
+      showDeleteConfirmation: false // Track whether to show delete confirmation
     };
   },
   mounted() {
@@ -71,6 +116,9 @@ export default {
         this.userEmail = decodedToken.user_email;
         this.firstName = decodedToken.first_name;
         this.lastName = decodedToken.last_name;
+        this.newEmail = this.userEmail;
+        this.newFirstName = this.firstName;
+        this.newLastName = this.lastName;
       }
     },
     openReauthModal() {
@@ -79,7 +127,7 @@ export default {
     closeReauthModal() {
       this.showReauthModal = false;
       this.reauthPassword = "";
-      this.reauthError = ""; // Reset reauthError when closing modal
+      this.reauthError = "";
     },
     async reauthenticate() {
       const token = localStorage.getItem("token");
@@ -109,23 +157,19 @@ export default {
         }
       } catch (error) {
         console.error("Re-authentication failed:", error);
-        this.reauthError = "Incorrect password. Please try again."; // Set error message
+        this.reauthError = "Incorrect password. Please try again.";
       }
     },
     async saveEmailChanges() {
-      // Implement email update logic here
-      await this.saveFieldChanges('email', this.userEmail);
+      await this.saveFieldChanges('email', this.newEmail);
     },
     async saveFirstNameChanges() {
-      // Implement first name update logic here
-      await this.saveFieldChanges('first_name', this.firstName);
+      await this.saveFieldChanges('first_name', this.newFirstName);
     },
     async saveLastNameChanges() {
-      // Implement last name update logic here
-      await this.saveFieldChanges('last_name', this.lastName);
+      await this.saveFieldChanges('last_name', this.newLastName);
     },
     async savePasswordChange() {
-      // Implement password update logic here
       await this.saveFieldChanges('password', this.newPassword);
     },
     async saveFieldChanges(field, value) {
@@ -139,9 +183,7 @@ export default {
           const response = await axiosInstance.patch('/users', updatedData);
           
           if (response.status === 200) {
-            // Update local storage with new token
             localStorage.setItem("token", response.data.access_token);
-
             this.successMessage = true;
             setTimeout(() => {
               this.successMessage = false;
@@ -152,50 +194,92 @@ export default {
           alert(`An error occurred while updating ${field}.`);
         }
       }
+    },
+    refreshPage() {
+      window.location.reload();
+    },
+    confirmDeleteAccount() {
+      // Show delete confirmation modal
+      this.showDeleteConfirmation = true;
+    },
+    cancelDelete() {
+      // Cancel delete action
+      this.showDeleteConfirmation = false;
+    },
+    async deleteAccount() {
+      const token = localStorage.getItem("token");
+      if (token && this.isEditable) {
+        const decodedToken = JSON.parse(atob(token.split(".")[1]));
+        const userId = decodedToken.user_id; // Assuming user_id is part of the token
+
+        try {
+          const response = await axiosInstance.delete(`/users/${userId}`);
+
+          if (response.status === 204) {
+            // Account deleted successfully
+            localStorage.removeItem("token");
+            router.push('/register'); // Redirect to signup page
+          }
+        } catch (error) {
+          console.error("Error deleting account:", error);
+          alert("An error occurred while deleting your account. Please try again later.");
+        }
+      }
     }
   }
 };
 </script>
 
+
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
 .account-details {
+  font-family: 'Montserrat', sans-serif;
   max-width: 500px;
   margin: 50px auto;
   padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+  background-color: #ffffff;
+  border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
-  position: relative; /* Ensure positioning context */
+  position: relative;
 }
 
 .account-details h1 {
-  font-size: 2em;
-  
+  font-size: 2.5em;
   color: #333;
-  top: 20px;
+  margin-bottom: 20px;
 }
 
-.edit-icon {
-  width: 20px;
-  height: 20px;
+.edit-icon,
+.refresh-icon {
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   display: inline-block;
-  background-image: url('edit-icon.png');
   background-size: cover;
   position: absolute;
   top: 20px;
   right: 20px;
 }
 
+.edit-icon {
+  background-image: url('@/assets/edit-icon.png');
+}
+
+.refresh-icon {
+  background-image: url('@/assets/refresh-icon.png');
+}
+
 .user-info {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start; /* Align items to the left */
 }
 
 .user-info.disabled .input {
-  background-color: #e9e9e9;
+  background-color: #f0f0f0;
   cursor: not-allowed;
 }
 
@@ -203,7 +287,6 @@ export default {
   width: 100%;
   padding: 10px 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   border-bottom: 1px solid #ddd;
   margin-bottom: 10px;
@@ -212,56 +295,91 @@ export default {
 .label {
   font-weight: bold;
   color: #555;
-  margin-bottom: 5px;
+  margin-right: 10px;
+  flex: 1;
+  text-align: right;
+}
+
+.info-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align content to the left */
+  flex: 3; /* Adjust flex basis */
+}
+
+.info-text {
+  font-size: 1.2em;
+  color: rgb(14, 100, 75); /* Changed to green */
+  margin-left: 10px;
 }
 
 .input {
-  width: 80%;
-  padding: 10px;
-  border: 1px solid #ddd;
+  width: 100%; /* Adjust this width as per your design */
+  min-width: 200px; /* Ensure a minimum width to prevent collapsing */
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 16px;
+  box-sizing: border-box;
 }
 
-.btn-save {
-  padding: 10px 20px;
+.input:focus {
+  outline: none;
+  border-color: rgb(14, 100, 75); /* Changed to green */
+}
+
+.long-input {
+  width: 100%; /* Ensure full width for longer inputs */
+}
+
+.btn-check {
   border: none;
-  background-color: #4caf50;
-  color: #fff;
+  background-color: transparent;
   cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-  margin-top: 15px;
+  margin-left: 10px;
 }
 
-.btn-save:hover {
-  background-color: #45a049;
+.btn-check img {
+  width: 24px;
+  height: 24px;
 }
 
-.btn-save:disabled {
-  background-color: #9e9e9e;
-  cursor: not-allowed;
+.btn-delete {
+  background-color:  #d32f2f; /* Red color */
+  color: white;
+  padding: 12px 20px;
+  margin: 10px 0;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.btn-delete:hover {
+  background-color:  #d32f2f ; /* Darker red on hover */
 }
 
 .notification {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #4caf50;
+  background-color: #d32f2f;
   color: white;
   padding: 15px;
-  border-radius: 5px;
+  border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   transition: transform 0.3s ease-out;
 }
 
-.notification.success {
-  background-color: #4caf50;
+.notification p {
+  margin: 0;
 }
 
-.notification.error {
-  background-color: #f44336;
+.notification.success {
+  background-color:  #9CAF88;
 }
 
 .modal {
@@ -273,35 +391,95 @@ export default {
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity */
   padding-top: 60px;
 }
 
 .modal-content {
   background-color: #fefefe;
-  margin: 5% auto; /* 15% from the top and centered */
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
+  margin: 10% auto; /* Centered vertically and closer to top */
+  padding: 30px;
+  border-radius: 10px;
+  width: 40%; /* Adjusted width */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative; /* Added to ensure proper positioning */
 }
 
-.close {
-  color: #aaa;
-  float: right;
+.modal-content h2 {
+  font-size: 1.8em;
+  color: #333;
+}
+
+.modal-content .modal-text {
+  font-size: 1em;
+  color: #333; /* Default color */
+  margin-bottom: 10px;
+}
+
+.modal-content .close {
   font-size: 28px;
   font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
+  position: absolute;
+  top: 20px;
+  right: 30px;
   cursor: pointer;
 }
 
-.error-msg {
-  color: #f44336;
+.modal-content .close:hover,
+.modal-content .close:focus {
+  color: black;
+  text-decoration: none;
+}
+
+.btn-save {
+  background-color:  #9CAF88;
+  color: white;
+  padding: 14px 20px;
+  margin-top: 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
   font-weight: bold;
-  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.btn-save:hover {
+  background-color: #5F4F4D;
+}
+
+.error-msg {
+  color: #f44336; /* Red color */
+  margin-top: 5px; /* Adjusted margin */
+  font-size: 0.9em; /* Smaller font size */
+}
+
+
+.btn-delete-confirm,
+.btn-cancel {
+  padding: 10px 20px;
+  margin-right: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.btn-delete-confirm {
+  background-color: #f44336; /* Red color */
+  color: white;
+}
+
+.btn-delete-confirm:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+}
+
+.btn-cancel {
+  background-color: #ddd;
+  color: #333;
+}
+
+.btn-cancel:hover {
+  background-color: #bbb;
 }
 </style>

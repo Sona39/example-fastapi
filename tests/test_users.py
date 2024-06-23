@@ -13,7 +13,7 @@ def test_root(client):
 
 def test_create_user(client):
     res = client.post(
-        "/users/", json={"email": "hello127@gmail.com", "password" : "password123"})
+        "/users/", json={"email": "hello127@gmail.com", "password" : "password123", "first_name": "Sona", "last_name": "Ghazaryan"})
     new_user = schemas.UserResponse(**res.json())
     assert new_user.email =="hello127@gmail.com"
     assert res.status_code == 201

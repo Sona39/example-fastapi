@@ -8,9 +8,9 @@
       </div>
       <div class="navbar-menu">
         <router-link v-if="isLoggedIn" to="/account" class="navbar-item">{{ userName }}</router-link>
-        <router-link v-if="!isLoggedIn" to="/login" class="navbar-item btn">Login</router-link>
-        <router-link v-if="!isLoggedIn" to="/register" class="navbar-item btn">Register</router-link>
-        <button v-if="isLoggedIn" @click="logout" class="navbar-item btn-logout">Log Out</button>
+        <router-link v-if="!isLoggedIn" to="/login" class="navbar-item btn btn-small">Login</router-link>
+        <router-link v-if="!isLoggedIn" to="/register" class="navbar-item btn btn-small">Register</router-link>
+        <button v-if="isLoggedIn" @click="logout" class="navbar-item btn-logout btn-small">Log Out</button>
       </div>
     </nav>
   </header>
@@ -99,35 +99,32 @@ export default {
 
 .navbar-item:hover {
   text-decoration: underline;
-  color: #5F4F4D; /* Tan */
+  color: #fff; /* Tan */
 }
 
-.btn {
-  padding: 10px 20px;
-  border: 2px solid #5F4F4D; /* Use the existing color */
-  border-radius: 20px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  text-align: center;
-  text-transform: uppercase;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
+.btn,
 .btn-logout {
-  padding: 10px 20px;
-  border: 2px solid #5F4F4D; /* Use the existing color */
-  border-radius: 30px;
-  font-size: 12px;
+  display: inline-block;
+  padding: 12px 24px; /* Increased padding for larger size */
+  font-size: 16px; /* Default font size */
   font-weight: bold;
-  cursor: pointer;
   text-align: center;
-  text-transform: uppercase;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  text-decoration: none;
+  color: #fff;
+  background-color: #9CAF88; /* Ecru White */
+  border-radius: 30px; /* Kept the rounded, pill-like shape */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-small,
+.btn-logout.btn-small {
+  padding: 8px 16px; /* Adjusted padding for smaller size */
+  font-size: 14px; /* Smaller font size */
 }
 
 .btn:hover,
 .btn-logout:hover {
-  border-color: #5F4F4D ; /* Martini */
+  background-color: #5F4F4D; /* Martini */
 }
 </style>

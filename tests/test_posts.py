@@ -2,16 +2,6 @@ def test_getting_all_post(authorized_client, test_post):
     res = authorized_client.get("/posts")
     assert res.status_code == 200
 
-def test_getting_one_post(authorized_client, test_post):
-    res = authorized_client.get("/posts")
-    assert res.status_code == 200
-
-
-def test_getting_all_post(authorized_client, test_post):
-    res = authorized_client.get("/posts")
-
-    assert res.status_code == 200
-
 
 def test_getting_one_post(authorized_client, test_post):
     res = authorized_client.get("/posts/1")

@@ -2,6 +2,7 @@
 import { createApp } from 'vue';
 import AppComponent from './AppComponent.vue'; // Adjust path if necessary
 import router from './router';
+import './global.css'; // Add this line
 
 // Import FontAwesome
 import '@fortawesome/fontawesome-free/css/all.css';
