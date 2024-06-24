@@ -39,10 +39,12 @@
 </template>
 
 <script>
-import axios from 'axios';
 import CreatePostComponent from './CreatePostComponent.vue';
 import VoteComponent from './VoteComponent.vue';
 import NotificationComponent from './NotificationComponent.vue';
+import axiosInstance from '../axios';
+
+
 
 export default {
   components: {
@@ -63,7 +65,7 @@ export default {
   methods: {
     async fetchPosts() {
       try {
-        const response = await axios.get(`http://${this.apiHost}:${this.apiPort}/posts`);
+        const response = await axiosInstance.get(`/posts`);
 
         this.posts = response.data.map(post => ({
           ...post,
@@ -79,7 +81,7 @@ export default {
     async deletePost(id) {
       const token = localStorage.getItem('token');
       try {
-        await axios.delete(`http://127.0.0.1:8000/posts/${id}`, {
+        await axiosInstance.delete(`/posts/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

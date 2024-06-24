@@ -10,8 +10,7 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int
-    api_host: str
-    api_port:int
+    vue_app_api_host: str
     
 
     class Config:

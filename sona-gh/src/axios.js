@@ -1,7 +1,9 @@
 import axios from 'axios';
+const apiHost = process.env.VUE_APP_API_HOST;
+
 
 const axiosInstance = axios.create({
-  baseURL: '$', // Update with your API base URL
+  baseURL: apiHost, // Update with your API base URL
   headers: {
     'Content-Type': 'application/json'
   }

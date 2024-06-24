@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axiosInstance from '../axios';
 
 export default {
   data() {
@@ -19,11 +19,11 @@ export default {
   },
   methods: {
     async fetchPost(id) {
-      const response = await axios.get(`http://127.0.0.1:8000/posts/${id}`);
+      const response = await axiosInstance.get(`/posts/${id}`);
       this.post = response.data;
     },
     async vote(id) {
-      await axios.post(`http://127.0.0.1:8000/vote/${id}`);
+      await axiosInstance.post(`/vote/${id}`);
       this.fetchPost(id);
     },
     editPost(id) {

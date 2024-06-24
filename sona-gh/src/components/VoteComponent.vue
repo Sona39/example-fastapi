@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axiosInstance from '../axios';
 
 export default {
   props: {
@@ -33,7 +33,7 @@ export default {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get('http://127.0.0.1:8000/vote', {
+          const response = await axiosInstance.get('/vote', {
             headers: {
               Authorization: `Bearer ${token}`
             }
@@ -48,8 +48,8 @@ export default {
     async toggleLike() {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.post(
-          `http://127.0.0.1:8000/vote/${this.postId}`,
+        const response = await axiosInstance.post(
+          `/vote/${this.postId}`,
           { liked: !this.liked },
           {
             headers: {
