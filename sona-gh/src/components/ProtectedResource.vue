@@ -17,7 +17,7 @@
     },
     async created() {
       try {
-        const response = await axios.get('/protected-resource');
+        const response = await axios.get('/protected-resource/');
         this.message = response.data.message;
       } catch (err) {
         this.message = 'Error fetching protected resource';

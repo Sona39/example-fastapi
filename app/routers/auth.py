@@ -13,7 +13,7 @@ router = APIRouter(tags=['Authentication'])
     - db (Session): Database session dependency.
 """
 
-@router.post('/login', response_model=schemas.Token)
+@router.post('/login/', response_model=schemas.Token)
 def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
 
     # --- Retrieve the user from the database using the provided email (username) ---

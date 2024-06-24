@@ -39,7 +39,7 @@ export default {
           throw new Error('No token available');
         }
 
-        await axiosInstance.post('/posts', this.form, {
+        await axiosInstance.post('/posts/', this.form, {
           headers: {
             Authorization: `Bearer ${token}`
           }

@@ -78,7 +78,7 @@ export default {
         formData.append('username', this.email);
         formData.append('password', this.password);
 
-        const response = await axios.post('/login', formData, {
+        const response = await axios.post('/login/', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }

@@ -145,7 +145,7 @@ export default {
       formData.append('password', password);
 
       try {
-        const response = await axiosInstance.post('/login', formData, {
+        const response = await axiosInstance.post('/login/', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -180,7 +180,7 @@ export default {
         };
 
         try {
-          const response = await axiosInstance.patch('/users', updatedData);
+          const response = await axiosInstance.patch('/users/', updatedData);
           
           if (response.status === 200) {
             localStorage.setItem("token", response.data.access_token);
