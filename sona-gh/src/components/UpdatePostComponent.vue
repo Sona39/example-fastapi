@@ -59,7 +59,7 @@ export default {
       } catch (error) {
         console.error('Error updating post:', error);
         // Set notification message and type for error
-        this.notificationMessage = 'Error updating post! You are not the owner of this post';
+        this.notificationMessage = 'Error while updating post! You are not the owner of this post!';
         this.notificationType = 'error';
       }
     },
