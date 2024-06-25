@@ -30,7 +30,7 @@
         </div>
         <span v-if="!isInitialPasswordValid && !form.password" class="initial-error-message">Password is required.</span>
         <span v-if="!isInitialPasswordValid && form.password && !isValidPassword" class="error-message">
-          Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.
+          Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character!.
         </span>
       </div>
       <button type="submit" :disabled="!isValidForm">Register</button>
