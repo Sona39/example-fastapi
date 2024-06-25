@@ -84,7 +84,8 @@ jobs:
             git pull
             echo ${{secrets.PROD_PASSWORD}} | sudo -S systemctl restart api
             echo ${{secrets.PROD_PASSWORD}} | sudo -S systemctl restart fe-build
-
+            
+            cd 
             source app/venv/bin/activate
 
             pip install -r requirements.txt
