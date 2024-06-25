@@ -80,13 +80,14 @@ jobs:
           username: ${{secrets.PROD_USERNAME}}
           password: ${{secrets.PROD_PASSWORD}}
           script: |
+
+            source app/venv/bin/activate
             cd app/src
             git pull
             echo ${{secrets.PROD_PASSWORD}} | sudo -S systemctl restart api
             echo ${{secrets.PROD_PASSWORD}} | sudo -S systemctl restart fe-build
             
-            cd 
-            source app/venv/bin/activate
+          
 
             pip install -r requirements.txt
 
