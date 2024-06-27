@@ -50,3 +50,8 @@ class contact(Base):
     __tablename__ = "contact"
 
     id = Column(Integer, primary_key=True, nullable=False)
+
+class Message(Base):
+    __tablename__ = "message"
+
+    id = Column(Integer, primary_key=True, nullable=False)
