@@ -80,17 +80,25 @@ jobs:
           username: ${{secrets.PROD_USERNAME}}
           password: ${{secrets.PROD_PASSWORD}}
           script:
+            export DATABASE_HOSTNAME=${{secrets.DATABASE_HOSTNAME}}
+            export DATABASE_PORT=${{secrets.DATABASE_PORT}}
+            export DATABASE_PASSWORD=${{secrets.DATABASE_PASSWORD}}
+            export DATABASE_NAME=${{secrets.DATABASE_NAME}}
+            export DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}}
+            export SECRET_KEY=${{secrets.SECRET_KEY}}
+            export ALGORITHM=${{secrets.ALGORITHM}}
+            export ACCESS_TOKEN_EXPIRE_MINUTES=${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
+            export VUE_APP_API_HOST=${{secrets.VUE_APP_API_HOST}}
+          
+            source app/venv/bin/activate
+
             cd app/src
             git pull
-            echo ${{secrets.PROD_PASSWORD}} | sudo -S systemctl restart api
-            echo ${{secrets.PROD_PASSWORD}} | sudo -S systemctl restart fe-build
-            
-          
-
-            pip install -r requirements.txt
-
-            source app/venv/bin/activate
             alembic upgrade head
+
+            echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl restart api
+
+            echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl restart fe-build
 
             deactivate
 
