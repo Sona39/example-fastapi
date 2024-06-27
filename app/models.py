@@ -36,28 +36,6 @@ class Vote(Base):
     post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)
 
 
-class Comments(Base):
-    __tablename__ = "comments"
-
-    id = Column(Integer, primary_key=True, nullable=False)
-
-class Share(Base):
-    __tablename__ = "share"
-
-    id = Column(Integer, primary_key=True, nullable=False)
-
-class contact(Base):
-    __tablename__ = "contact"
-
-    id = Column(Integer, primary_key=True, nullable=False)
-
-class Message(Base):
-    __tablename__ = "message"
-
-    id = Column(Integer, primary_key=True, nullable=False)
 
 
-class Friend(Base):
-    __tablename__ = "friend"
 
-    id = Column(Integer, primary_key=True, nullable=False)
