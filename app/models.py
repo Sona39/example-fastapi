@@ -45,3 +45,8 @@ class Share(Base):
     __tablename__ = "share"
 
     id = Column(Integer, primary_key=True, nullable=False)
+
+class contact(Base):
+    __tablename__ = "contact"
+
+    id = Column(Integer, primary_key=True, nullable=False)

@@ -85,6 +85,7 @@ jobs:
             cd app/src
             git pull
             alembic upgrade head
+            export $(grep -v '^#' .env | xargs)
             echo ${{secrets.PROD_PASSWORD}} | sudo -S systemctl restart api
             echo ${{secrets.PROD_PASSWORD}} | sudo -S systemctl restart fe-build
             
