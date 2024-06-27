@@ -40,3 +40,8 @@ class Comments(Base):
     __tablename__ = "comments"
 
     id = Column(Integer, primary_key=True, nullable=False)
+
+class Share(Base):
+    __tablename__ = "share"
+
+    id = Column(Integer, primary_key=True, nullable=False)

@@ -80,10 +80,11 @@ jobs:
           username: ${{secrets.PROD_USERNAME}}
           password: ${{secrets.PROD_PASSWORD}}
           script: |
-
+            cd
             source app/venv/bin/activate
             cd app/src
             git pull
+            alembic upgrade head
             echo ${{secrets.PROD_PASSWORD}} | sudo -S systemctl restart api
             echo ${{secrets.PROD_PASSWORD}} | sudo -S systemctl restart fe-build
             
@@ -91,7 +92,6 @@ jobs:
 
             pip install -r requirements.txt
 
-            alembic upgrade head
 
             echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl restart api
 

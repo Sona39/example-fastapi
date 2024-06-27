@@ -10,6 +10,7 @@ SQLALCHEMY_DATABASE_URL = (
 )
 
 
+
 """
        FASTAPI
           |
