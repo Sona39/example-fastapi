@@ -55,3 +55,9 @@ class Message(Base):
     __tablename__ = "message"
 
     id = Column(Integer, primary_key=True, nullable=False)
+
+
+class Friend(Base):
+    __tablename__ = "friend"
+
+    id = Column(Integer, primary_key=True, nullable=False)
