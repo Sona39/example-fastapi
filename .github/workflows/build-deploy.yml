@@ -93,13 +93,12 @@ jobs:
             source app/venv/bin/activate
 
             cd app/src
+
             git pull
             alembic upgrade head
 
-            echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl restart api
-
-            echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl restart fe-build
-            echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl daemon-reload
+            echo "${{ secrets.PROD_PASSWORD }}" | sudo -S systemctl restart api
+            echo "${{ secrets.PROD_PASSWORD }}" | sudo -S systemctl restart fe-build
 
             deactivate
 
