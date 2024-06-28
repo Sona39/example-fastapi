@@ -38,6 +38,3 @@ class Vote(Base):
 
 
 
-class tabletesting(Base):
-    __tablename__ = "testing"
-    testid = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
