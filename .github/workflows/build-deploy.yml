@@ -102,7 +102,7 @@ jobs:
 
             deactivate
             cd
-            cd FastAPI/src/ferny/dist
+            cd app/src/sona-gh/dist
             npm run build
 
 
