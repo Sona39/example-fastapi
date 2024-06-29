@@ -10,7 +10,7 @@
         <label for="content" class="label">Content:</label>
         <textarea v-model="form.content" id="content" class="form-control" rows="5" required></textarea>
       </div>
-      <button type="submit" class="btn btn-primary">Create</button>
+      <button type="submit" class="btn btn-primary">Create Post</button>
     </form>
     <Notification v-if="notificationMessage" :message="notificationMessage" :type="notificationType" />
   </div>
