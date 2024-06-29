@@ -101,8 +101,11 @@ jobs:
             echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl restart api
 
             deactivate
+
             cd
+
             cd app/src/sona-gh/dist
+            
             npm run build
 
 
