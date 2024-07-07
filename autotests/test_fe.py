@@ -1,7 +1,7 @@
 import pytest
 import asyncio
 from playwright.async_api import async_playwright, expect
-from data import generate_random_email, generate_random_post_content, generate_random_post_title
+from .utils import generate_random_email, generate_random_post_content, generate_random_post_title
 
 random_email = generate_random_email()
 random_title = generate_random_post_title()
@@ -402,7 +402,7 @@ async def test_update_account():
       
         # # Checks if the success message is received 
         # success_message = page.locator("text=Password updated successfully!!")
-        # await expect(success_message).to_be_visible()
+        # await expect(success_message).to_be_vis   ible()
 
         # Clicks on the Sign out
         xpath = "/html/body/div/div/header/nav/div[2]/button"
@@ -472,6 +472,7 @@ async def test_delete_account():
         await login(page, f"updated+{curr_email}", f"{password}U")
 
          # Clicks on the Account Name
+        await page.wait_for_timeout(2000)
         xpath = "/html/body/div/div/header/nav/div[2]/a"
         element = page.locator(f'xpath={xpath}')
         await element.click()
