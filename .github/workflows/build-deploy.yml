@@ -56,7 +56,7 @@ jobs:
       - name: test with pytest
         run: |
           pip install pytest
-          pytest
+          pytest tests
 
       - name: Install Node.js and npm
         uses: actions/setup-node@v3
